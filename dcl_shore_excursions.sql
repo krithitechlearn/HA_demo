@@ -1,0 +1,40 @@
+-- DCL for access control
+
+-- Create roles
+CREATE ROLE ROLE_DB_ADMIN NOLOGIN;
+CREATE ROLE ROLE_EDITOR NOLOGIN;
+CREATE ROLE ROLE_USER NOLOGIN;
+CREATE ROLE ROLE_VIEWER NOLOGIN;
+CREATE ROLE ROLE_SYSTEM_INTEGRATOR NOLOGIN; -- Inferred from LLD actors, not explicitly in user_role enum
+
+-- Grant privileges to ROLE_DB_ADMIN
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO ROLE_DB_ADMIN;
+GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO ROLE_DB_ADMIN;
+
+-- Grant privileges to ROLE_EDITOR
+GRANT SELECT, INSERT, UPDATE ON port TO ROLE_EDITOR;
+GRANT SELECT, INSERT, UPDATE ON tour TO ROLE_EDITOR;
+GRANT SELECT, INSERT, UPDATE ON port_image TO ROLE_EDITOR;
+GRANT SELECT, INSERT, UPDATE ON tour_image TO ROLE_EDITOR;
+
+-- Grant privileges to ROLE_USER
+GRANT SELECT ON port TO ROLE_USER;
+GRANT SELECT ON tour TO ROLE_USER;
+GRANT SELECT ON port_image TO ROLE_USER;
+GRANT SELECT ON tour_image TO ROLE_USER;
+
+-- Grant privileges to ROLE_VIEWER
+GRANT SELECT ON port TO ROLE_VIEWER;
+GRANT SELECT ON tour TO ROLE_VIEWER;
+GRANT SELECT ON port_image TO ROLE_VIEWER;
+GRANT SELECT ON tour_image TO ROLE_VIEWER;
+
+-- Grant privileges to ROLE_SYSTEM_INTEGRATOR
+GRANT SELECT ON port TO ROLE_SYSTEM_INTEGRATOR;
+GRANT SELECT ON tour TO ROLE_SYSTEM_INTEGRATOR;
+GRANT SELECT ON port_image TO ROLE_SYSTEM_INTEGRATOR;
+GRANT SELECT ON tour_image TO ROLE_SYSTEM_INTEGRATOR;
+
+-- Note: In a real application, application users (e.g., 'app_service_user') would be created
+-- and granted these roles, or roles would be assigned directly to database users.
+-- For this LLD, we define the roles and their permissions.
