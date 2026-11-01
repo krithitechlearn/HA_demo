@@ -1,0 +1,46 @@
+version: '3.8'
+
+# Docker Compose for local development with PostgreSQL only.
+# Related: US-060, LLD Section 10
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: shoreexcursions-postgres
+    environment:
+      POSTGRES_DB: shoreexcursions
+      POSTGRES_USER: shoreexcursions
+      POSTGRES_PASSWORD: shoreexcursions
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U shoreexcursions"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build: .
+    container_name: shoreexcursions-app
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      DATABASE_URL: jdbc:postgresql://postgres:5432/shoreexcursions
+      DATABASE_USERNAME: shoreexcursions
+      DATABASE_PASSWORD: shoreexcursions
+      APP_JWT_SECRET: change-this-secret-in-production-minimum-256-bits
+      APP_JWT_EXPIRATION_MS: 28800000
+      ALLOWED_ORIGINS: http://localhost:3000
+      IMAGE_STORAGE_BASE_URL: http://localhost:9000
+      IMAGE_STORAGE_BUCKET: shore-excursions
+      IMAGE_STORAGE_ACCESS_KEY: minioadmin
+      IMAGE_STORAGE_SECRET_KEY: minioadmin
+    ports:
+      - "8080:8080"
+
+volumes:
+  postgres_data:
